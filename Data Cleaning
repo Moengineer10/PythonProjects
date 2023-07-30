@@ -1,0 +1,113 @@
+# Use of Pandas lib
+import pandas as pd
+
+# Dataset called and read
+df= pd.read_excel(r"C:\Users\moham\Downloads\Customer Call List.xlsx")
+
+# Reassign to variable
+df
+
+# Remove potential duplicates
+df=df.drop_duplicates()
+df
+
+# Remove unnecessary columns, in our case 'Not_Useful_Column'
+df=df.drop(columns = "Not_Useful_Column")
+
+# Remove "/" off unwanted character in column "Last_Name" string
+df["Last_Name"]=df["Last_Name"].str.strip("123._/")
+
+# Reassign to variable
+df
+
+# Clean "Phone_Number" replacing with blank all non digit characters and only keeping letters from A to z
+# lower or upper case, and numbers from 0 to 9
+df["Phone_Number"].str.replace('[^a-zA-Z0-9]','')
+
+# Convert 'Phone_Number' column to string 
+df["Phone_Number"]= df["Phone_Number"].apply(lambda x: str(x))
+
+# Reassign to variable
+df
+
+
+
+# Replace unwanted strings with blanks
+
+df["Phone_Number"] = df["Phone_Number"].str.replace('nan','')
+df["Phone_Number"] = df["Phone_Number"].str.replace('NaN','')
+df["Phone_Number"] = df["Phone_Number"].str.replace('N/a','')
+df["Phone_Number"] = df["Phone_Number"].str.replace('-','')
+df["Phone_Number"] = df["Phone_Number"].str.replace('/','')
+df["Phone_Number"] = df["Phone_Number"].str.replace('|','')
+
+#Standardize 'Phone_Number' column format
+df["Phone_Number"]= df["Phone_Number"].apply(lambda x: x[0:3] + '-' + x[3:6] + '-' + x[6:10])
+
+# Reassign to variable
+df
+
+# Replace '--' in 'Phone_Number' with blanks
+df["Phone_Number"] = df["Phone_Number"].str.replace('--','')
+
+# Reassign to variable
+df
+
+# Spacing "Address" string separating after first and second',', assigning names (Aliasing) to newly created column
+
+df[["Street_Address", "State", "Zip_code"]] =df["Address"].str.split(',',2, expand=True)
+df
+
+# Remove first 'Address' column
+df=df.drop(columns = "Address")
+df
+
+#Standardize "Paying Customer" column 
+df["Paying Customer"] = df["Paying Customer"].str.replace('Yes', 'Y')
+df
+
+#Replace "N/a" in column with blank
+
+df["Paying Customer"] = df["Paying Customer"].str.replace('N/a', '')
+df
+
+#Standardize "Paying Customer" column 
+df["Paying Customer"] = df["Paying Customer"].str.replace('No', 'N')
+df
+
+
+#Standardize "Paying Customer" column 
+df["Do_Not_Contact"] = df["Do_Not_Contact"].str.replace('Yes', 'Y')
+df
+
+#Standardize "Do_Not_Contact" column 
+df["Do_Not_Contact"] = df["Do_Not_Contact"].str.replace('No', 'N')
+df
+
+# To get rid of "None, "NaN" we will fill each empty cells with blank
+df= df.fillna('')
+df
+
+# Drop row of any customer(s) not willing to be contacted, "Y" in "Do_Not_Contact"
+for x in df.index:
+    if df.loc[x, "Do_Not_Contact"] == 'Y':
+        df.drop(x, inplace=True)
+df
+
+
+# Drop row of any customer(s) with blank in "Do_Not_Contact" column
+for x in df.index:
+    if df.loc[x, "Do_Not_Contact"] == '':
+        df.drop(x, inplace=True)
+df
+
+# Drop row of any customer(s) without a phone number
+for x in df.index:
+    if df.loc[x, "Phone_Number"] == '':
+        df.drop(x, inplace=True)
+df
+
+# Reset the index to avoid confusion with index
+
+df = df.reset_index(drop=True)
+df
